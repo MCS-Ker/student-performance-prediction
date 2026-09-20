@@ -4,6 +4,8 @@ import joblib
 import os
 import csv
 from .models import Student, Course, StudentRecord
+from django.contrib.auth.decorators import login_required
+
 
 # تحميل النموذج المدرب مرة واحدة عند تشغيل الخادم
 MODEL_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "model.pkl")
@@ -31,6 +33,7 @@ def classify_risk(fail_percent):
         return "وضع مستقر", "", "bg-success"
 
 
+@login_required
 def predict_all(request):
     """صفحة نتائج التنبؤ لجميع السجلات"""
     results = []
@@ -56,6 +59,7 @@ def predict_all(request):
     return render(request, "students/predictions.html", {"results": results})
 
 
+@login_required
 def export_csv(request):
     """تصدير نتائج التنبؤ إلى ملف CSV يفتح في إكسل"""
 
@@ -94,6 +98,7 @@ def export_csv(request):
     return response
 
 
+@login_required
 def add_record(request):
     """إدخال بيانات طالب مع الحماية من الكتابة فوق سجل موجود"""
 
@@ -154,6 +159,7 @@ def add_record(request):
     })
 
 
+@login_required
 def dashboard(request):
     """لوحة التحليلات: صورة كلية عن حالة الطلاب وأداء النموذج"""
 
@@ -236,3 +242,5 @@ def dashboard(request):
         "feature_importance": feature_importance,
         "model_metrics": model_metrics,
     })
+
+
