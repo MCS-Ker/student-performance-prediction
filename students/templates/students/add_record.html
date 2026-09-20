@@ -1,0 +1,177 @@
+{% extends "students/base.html" %}
+
+{% block title %}إدخال بيانات طالب{% endblock %}
+{% block page_title %}إدخال بيانات طالب{% endblock %}
+{% block page_subtitle %}تسجيل الحضور والدرجات لحساب احتمال التعثر{% endblock %}
+
+{% block content %}
+
+{% if saved_name %}
+    {% if was_updated %}
+    <div class="alert alert-info alert-dismissible fade show shadow-sm" id="status-message">
+        كان لـ <strong>{{ saved_name }}</strong> سجل سابق في هذا المقرر، وقد تم تحديثه بالبيانات الجديدة.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% else %}
+    <div class="alert alert-success alert-dismissible fade show shadow-sm" id="status-message">
+        تم حفظ بيانات <strong>{{ saved_name }}</strong> بنجاح، ويمكنك إدخال طالب آخر.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endif %}
+{% endif %}
+
+<div class="card">
+    <div class="card-body p-4">
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <h5 class="card-title mb-3">اختيار الطالب والمقرر</h5>
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">الطالب</label>
+                    <select name="student" class="form-select" required>
+                        <option value="">-- اختر الطالب --</option>
+                        {% for s in students %}
+                            <option value="{{ s.id }}">{{ s.name }} ({{ s.student_id }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">المقرر</label>
+                    <select name="course" class="form-select" required>
+                        <option value="">-- اختر المقرر --</option>
+                        {% for c in courses %}
+                            <option value="{{ c.id }}">{{ c.title }} ({{ c.code }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <h5 class="card-title mb-3">الحضور وعادات الدراسة</h5>
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">عدد الحصص التي تغيب عنها الطالب</label>
+                    <input type="number" name="absences" class="form-control" min="0" max="93" required>
+                    <small class="text-muted">القيمة بين 0 و 93</small>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">وقت الدراسة الأسبوعي</label>
+                    <select name="studytime" class="form-select" required>
+                        <option value="1">1-اقل من ساعتين</option>
+                        <option value="2">2-من 2 إلى 5 ساعات</option>
+                        <option value="3">3-من 5 إلى 10 ساعات</option>
+                        <option value="4">4-أكثر من 10 ساعات</option>
+                    </select>
+                </div>
+            </div>
+
+            <h5 class="card-title mb-3">درجات الفترة الأولى (من 20)</h5>
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">درجة الوظيفة الأولى</label>
+                    <input type="number" step="0.5" name="assignment1" class="form-control" min="0" max="20" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">درجة الاختبار الأول</label>
+                    <input type="number" step="0.5" name="quiz1" class="form-control" min="0" max="20" required>
+                </div>
+            </div>
+
+            <h5 class="card-title mb-3">درجات الفترة الثانية (من 20)</h5>
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">درجة الوظيفة الثانية</label>
+                    <input type="number" step="0.5" name="assignment2" class="form-control" min="0" max="20" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">درجة الاختبار الثاني</label>
+                    <input type="number" step="0.5" name="quiz2" class="form-control" min="0" max="20" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg">حفظ</button>
+            <a href="{% url 'predictions' %}" class="btn btn-outline-secondary btn-lg">عرض النتائج</a>
+
+        </form>
+
+    </div>
+</div>
+<!-- نافذة منبثقة تظهر عند اختيار طالب ومقرر لهما سجل سابق -->
+<div class="modal fade" id="duplicateModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title">تنبيه: بيانات موجودة مسبقاً</h5>
+            </div>
+
+            <div class="modal-body">
+                بيانات هذا الطالب في هذا المقرر أُدخلت سابقاً.
+                إن تابعتِ الإدخال، ستُستبدل البيانات القديمة بعد تأكيدك.
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" data-bs-dismiss="modal">
+                    متابعة والتحديث
+                </button>
+                <button type="button" class="btn btn-outline-secondary" id="cancel-selection">
+                    رجوع
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ existing_pairs|json_script:"existing-pairs" }}
+
+<script>
+// قائمة الأزواج الموجودة مسبقاً، مرسلة من الخادم
+const existingPairs = JSON.parse(document.getElementById("existing-pairs").textContent);
+
+const studentSelect = document.querySelector('select[name="student"]');
+const courseSelect = document.querySelector('select[name="course"]');
+
+// إنشاء كائن النافذة المنبثقة من Bootstrap
+const duplicateModal = new bootstrap.Modal(document.getElementById("duplicateModal"));
+
+// تفحص إن كان الزوج المختار موجود مسبقاً
+function checkDuplicate() {
+    const pair = studentSelect.value + "-" + courseSelect.value;
+    const isDuplicate = studentSelect.value && courseSelect.value && existingPairs.includes(pair);
+
+    if (isDuplicate) {
+        studentSelect.classList.add("border-danger");
+        courseSelect.classList.add("border-danger");
+        duplicateModal.show();
+    } else {
+        studentSelect.classList.remove("border-danger");
+        courseSelect.classList.remove("border-danger");
+    }
+}
+
+// زر الرجوع يُفرّغ اختيار المقرر ليعيد المدرس الاختيار
+document.getElementById("cancel-selection").addEventListener("click", function () {
+    courseSelect.value = "";
+    studentSelect.classList.remove("border-danger");
+    courseSelect.classList.remove("border-danger");
+    duplicateModal.hide();
+});
+
+// نراقب الحقلين مع بعض ، التنبيه يعتمد على اكتمال الزوج
+studentSelect.addEventListener("change", checkDuplicate);
+courseSelect.addEventListener("change", checkDuplicate);
+
+// إخفاء رسالة التنبيه تلقائياً بعد ست ثواي
+const statusMessage = document.getElementById("status-message");
+if (statusMessage) {
+    setTimeout(function () {
+        bootstrap.Alert.getOrCreateInstance(statusMessage).close();
+    }, 6000);
+}
+</script>
+{% endblock %}

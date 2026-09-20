@@ -1,0 +1,188 @@
+{% extends "students/base.html" %}
+
+{% block title %}لوحة التحليلات{% endblock %}
+{% block page_title %}لوحة التحليلات{% endblock %}
+{% block page_subtitle %}نظرة شاملة على حالة الطلاب وأداء نموذج التنبؤ{% endblock %}
+
+{% block content %}
+
+<!-- بطاقات الأرقام الرئيسية -->
+<div class="row g-3 mb-4">
+
+    <div class="col-md-3 col-6">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="display-6 fw-bold text-dark">{{ total }}</div>
+                <div class="text-muted small">إجمالي السجلات</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-6">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="display-6 fw-bold text-danger">{{ high_risk }}</div>
+                <div class="text-muted small">خطر مرتفع</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-6">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="display-6 fw-bold text-warning">{{ medium_risk }}</div>
+                <div class="text-muted small">خطر متوسط</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-6">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="display-6 fw-bold text-secondary">{{ absence_alerts }}</div>
+                <div class="text-muted small">تجاوزوا حد الغياب</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row g-3">
+
+    <!-- توزيع مستويات الخطر -->
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title mb-4">توزيع مستويات الخطر</h5>
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span>خطر مرتفع</span>
+                        <span class="text-muted">{{ high_risk }} ({{ high_percent }}%)</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-danger" style="width: {{ high_percent }}%"></div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span>خطر متوسط</span>
+                        <span class="text-muted">{{ medium_risk }} ({{ medium_percent }}%)</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-warning" style="width: {{ medium_percent }}%"></div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span>وضع مستقر</span>
+                        <span class="text-muted">{{ stable }} ({{ stable_percent }}%)</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-success" style="width: {{ stable_percent }}%"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- أهمية العوامل -->
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title mb-4">أهمية العوامل في قرار النموذج</h5>
+
+                {% for factor in feature_importance %}
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span>{{ factor.name }}</span>
+                        <span class="text-muted">{{ factor.value }}%</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar {{ factor.color }}" style="width: {{ factor.value }}%"></div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <p class="text-muted small mb-0 mt-3">
+                    محسوبة من معاملات النموذج بعد توحيد المقياس.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- الطلاب الأكثر عرضة للخطر -->
+    <div class="col-lg-7">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title mb-3">الطلاب الأكثر عرضة للتعثر</h5>
+
+                <table class="table table-sm align-middle mb-0">
+                    <thead>
+                        <tr class="text-muted small">
+                            <th>الطالب</th>
+                            <th>المقرر</th>
+                            <th>الغيابات</th>
+                            <th>احتمال الرسوب</th>
+                            <th>التصنيف</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in top_risky %}
+                        <tr>
+                            <td>{{ s.student }}</td>
+                            <td>{{ s.course }}</td>
+                            <td>{{ s.absences }}</td>
+                            <td class="fw-bold">{{ s.fail_probability }}%</td>
+                            <td><span class="badge {{ s.badge }}">{{ s.risk_level }}</span></td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-center text-success py-3">
+                            لا يوجد طلاب في دائرة الخطر حالياً
+                        </td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- أداء النموذج -->
+    <div class="col-lg-5">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title mb-3">أداء النموذج</h5>
+
+                <p class="text-muted small">
+                    النموذج المعتمد: <span class="fw-bold text-dark">{{ model_metrics.name }}</span>
+                </p>
+
+                <div class="d-flex justify-content-between border-bottom py-2">
+                    <span class="small">الدقة العامة</span>
+                    <span class="fw-bold">{{ model_metrics.accuracy }}%</span>
+                </div>
+
+                <div class="d-flex justify-content-between border-bottom py-2">
+                    <span class="small">نسبة اكتشاف المتعثرين</span>
+                    <span class="fw-bold text-success">{{ model_metrics.risk_recall }}%</span>
+                </div>
+
+                <div class="d-flex justify-content-between py-2">
+                    <span class="small">خط الأساس للمقارنة</span>
+                    <span class="fw-bold text-muted">{{ model_metrics.baseline }}%</span>
+                </div>
+
+                <p class="text-muted small mb-0 mt-3">
+                    القيم محسوبة بالتحقق المتقاطع على خمس طيات.
+                </p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

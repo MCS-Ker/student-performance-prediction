@@ -1,0 +1,83 @@
+{% extends "students/base.html" %}
+
+{% block title %}تأكيد التحديث{% endblock %}
+{% block page_title %}تنبيه: سجل موجود مسبقاً{% endblock %}
+{% block page_subtitle %}راجع البيانات قبل استبدالها{% endblock %}
+
+{% block content %}
+
+<div class="alert alert-warning shadow-sm">
+    الطالب <strong>{{ student.name }} ({{ student.student_id }})</strong>
+    له سجل سابق في مقرر <strong>{{ course.title }}</strong>.
+    لم يُحفظ شيء بعد.
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title mb-3">مقارنة البيانات</h5>
+
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr class="text-muted small">
+                    <th>الحقل</th>
+                    <th>القيمة الحالية</th>
+                    <th>القيمة الجديدة</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>عدد الغيابات</td>
+                    <td class="text-muted">{{ existing.absences }}</td>
+                    <td class="fw-bold">{{ new_absences }}</td>
+                </tr>
+                <tr>
+                    <td>وقت الدراسة الأسبوعي</td>
+                    <td class="text-muted">{{ existing.studytime }}</td>
+                    <td class="fw-bold">{{ new_studytime }}</td>
+                </tr>
+                <tr>
+                    <td>درجة الوظيفة الأولى</td>
+                    <td class="text-muted">{{ existing.assignment1 }}</td>
+                    <td class="fw-bold">{{ new_assignment1 }}</td>
+                </tr>
+                <tr>
+                    <td>درجة الاختبار الأول</td>
+                    <td class="text-muted">{{ existing.quiz1 }}</td>
+                    <td class="fw-bold">{{ new_quiz1 }}</td>
+                </tr>
+                <tr>
+                    <td>درجة الوظيفة الثانية</td>
+                    <td class="text-muted">{{ existing.assignment2 }}</td>
+                    <td class="fw-bold">{{ new_assignment2 }}</td>
+                </tr>
+                <tr>
+                    <td>درجة الاختبار الثاني</td>
+                    <td class="text-muted">{{ existing.quiz2 }}</td>
+                    <td class="fw-bold">{{ new_quiz2 }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<form method="POST" action="{% url 'add_record' %}">
+    {% csrf_token %}
+
+    <!-- الحقول المخفية تحمل القيم الجديدة لتُرسل مرة أخرى عند التأكيد -->
+    <input type="hidden" name="student" value="{{ student.id }}">
+    <input type="hidden" name="course" value="{{ course.id }}">
+    <input type="hidden" name="absences" value="{{ new_absences }}">
+    <input type="hidden" name="studytime" value="{{ new_studytime }}">
+    <input type="hidden" name="assignment1" value="{{ new_assignment1 }}">
+    <input type="hidden" name="quiz1" value="{{ new_quiz1 }}">
+    <input type="hidden" name="assignment2" value="{{ new_assignment2 }}">
+    <input type="hidden" name="quiz2" value="{{ new_quiz2 }}">
+    <input type="hidden" name="confirm" value="yes">
+
+    <button type="submit" class="btn btn-warning btn-lg">نعم، حدّث البيانات</button>
+    <a href="{% url 'add_record' %}" class="btn btn-outline-secondary btn-lg">لا، تراجع</a>
+
+</form>
+
+{% endblock %}
