@@ -79,19 +79,20 @@
 
 ## بنية المشروع
 
-├── explore.py استكشاف البيانات الخام
-├── data_validation.py الفحص المنطقي للاتساق
-├── hypothesis_testing.py اختبار الفرضيات البديلة
-├── clean.py التنظيف وبناء عمود الهدف
-├── train.py تدريب النماذج والمقارنة
-├── feature_importance.py تحليل أثر الميزات
-├── confusion.py تحليل الأخطاء
-├── cross_validation.py التحقق المتقاطع
-├── cross_dataset.py الاختبار على مجموعة مختلفة
-├── seed_data.py بيانات تجريبية للعرض
-├── config/ إعدادات جانغو
-└── students/ تطبيق النظام
-
+| الملف | وظيفته |
+|---|---|
+| `explore.py` | استكشاف البيانات الخام |
+| `data_validation.py` | الفحص المنطقي للاتساق |
+| `hypothesis_testing.py` | اختبار الفرضيات البديلة |
+| `clean.py` | التنظيف وبناء عمود الهدف |
+| `train.py` | تدريب النماذج والمقارنة |
+| `feature_importance.py` | تحليل أثر الميزات |
+| `confusion.py` | تحليل الأخطاء |
+| `cross_validation.py` | التحقق المتقاطع |
+| `cross_dataset.py` | الاختبار على مجموعة مختلفة |
+| `seed_data.py` | بيانات تجريبية للعرض |
+| `config/` | إعدادات جانغو |
+| `students/` | تطبيق النظام |
 
 ---
 
