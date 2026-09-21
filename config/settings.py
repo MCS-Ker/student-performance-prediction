@@ -130,6 +130,6 @@ MAILERS = {
 
 
 # تحويلالمستخدم بعد الدخول والخروج
-LOGIN_REDIRECT_URL = 'dashboard'
+LOGIN_REDIRECT_URL = 'after_login'
 LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'

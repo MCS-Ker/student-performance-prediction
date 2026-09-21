@@ -17,3 +17,6 @@ class CourseAdmin(admin.ModelAdmin):
 class StudentRecordAdmin(admin.ModelAdmin):
     list_display = ("student", "course", "absences", "studytime",
                     "assignment1", "quiz1", "assignment2", "quiz2")
+
+
+admin.site.site_url = "/dashboard/"

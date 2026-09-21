@@ -6,14 +6,16 @@ from django.views.generic import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', RedirectView.as_view(pattern_name='dashboard'), name='home'),
+    path('', RedirectView.as_view(pattern_name='login'), name='home'),
 
     # صفحات المصادقة
     path('login/', auth_views.LoginView.as_view(
-        template_name='students/login.html'), name='login'),
+        template_name='students/login.html',
+        redirect_authenticated_user=True), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('password/', auth_views.PasswordChangeView.as_view(template_name='students/password_change.html'), name='password_change'),
     path('password/done/', auth_views.PasswordChangeDoneView.as_view(template_name='students/password_change_done.html'), name='password_change_done'),
+    path('start/', views.after_login, name='after_login'),
 
     # صفحات النظام
     path('dashboard/', views.dashboard, name='dashboard'),

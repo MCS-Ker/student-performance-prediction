@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, Http404
 from django.contrib.auth.decorators import login_required
 import joblib
@@ -247,3 +247,10 @@ def dashboard(request):
         "feature_importance": feature_importance,
         "model_metrics": model_metrics,
     })
+
+
+@login_required
+def after_login(request):
+    if request.user.is_superuser:
+        return redirect("admin:index")
+    return redirect("add_record")
