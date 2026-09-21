@@ -1,6 +1,4 @@
-# cross_validation.py
-# الغاية: التحقق من ثبات النتائج عبر تقسيمات متعددة
-# يُشغَّل بعد train.py
+# للحقق من ثبات النتائج عبر تقسيمات متعددة
 
 import pandas as pd
 from sklearn.model_selection import cross_val_score

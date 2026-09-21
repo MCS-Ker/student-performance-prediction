@@ -107,9 +107,6 @@
                 </div>
                 {% endfor %}
 
-                <p class="text-muted small mb-0 mt-3">
-                    محسوبة من معاملات النموذج بعد توحيد المقياس.
-                </p>
             </div>
         </div>
     </div>
@@ -141,7 +138,7 @@
                         </tr>
                         {% empty %}
                         <tr><td colspan="5" class="text-center text-success py-3">
-                            لا يوجد طلاب في دائرة الخطر حالياً
+                            لا يوجد طلاب في دائرة الخطر حاليا
                         </td></tr>
                         {% endfor %}
                     </tbody>
@@ -177,7 +174,90 @@
                 </div>
 
                 <p class="text-muted small mb-0 mt-3">
-                    القيم محسوبة بالتحقق المتقاطع على خمس طيات.
+                    من كل 100 طالب متعثر، يكتشف النظام حوالي 94.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- مقارنة المقررات -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-3">مقارنة المقررات</h5>
+
+                <table class="table table-sm align-middle mb-0">
+                    <thead>
+                        <tr class="text-muted small">
+                            <th>المقرر</th>
+                            <th>عدد الطلاب</th>
+                            <th>المعرضون للخطر</th>
+                            <th>تجاوزوا حد الغياب</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in course_stats %}
+                        <tr>
+                            <td>{{ c.course }}</td>
+                            <td>{{ c.total }}</td>
+                            <td>
+                                <span class="fw-bold">{{ c.at_risk }} من {{ c.total }}</span>
+                                <span class="text-muted small">({{ c.percent }}%)</span>
+                            </td>
+                            <td>{{ c.absence }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center text-muted py-3">لا توجد بيانات</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <p class="text-muted small mb-0 mt-3">
+                    المعرضون للخطر: احتمال رسوبهم 40% أو أكثر.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- تراجع الأداء بين الفترتين -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-3">تراجع الأداء بين الفترتين</h5>
+
+                <table class="table table-sm align-middle mb-0">
+                    <thead>
+                        <tr class="text-muted small">
+                            <th>الطالب</th>
+                            <th>المقرر</th>
+                            <th>تقييم الفترة الأولى</th>
+                            <th>تقييم الفترة الثانية</th>
+                            <th>التراجع</th>
+                            <th>الغيابات</th>
+                            <th>التصنيف</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in declines %}
+                        <tr>
+                            <td>{{ d.student }}</td>
+                            <td>{{ d.course }}</td>
+                            <td>{{ d.g1 }}</td>
+                            <td>{{ d.g2 }}</td>
+                            <td class="text-danger fw-bold">▼ {{ d.drop|floatformat:1 }}</td>
+                            <td>{{ d.absences }}</td>
+                            <td><span class="badge {{ d.badge }}">{{ d.risk_level }}</span></td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="7" class="text-center text-success py-3">
+                            لا يوجد تراجع بعلامة أو أكثر
+                        </td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <p class="text-muted small mb-0 mt-3">
+                    الطلاب الذين نزل تقييمهم في الفترة الثانية علامة أو أكثر عن الفترة الأولى.
                 </p>
             </div>
         </div>

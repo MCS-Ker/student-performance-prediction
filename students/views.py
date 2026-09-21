@@ -14,6 +14,7 @@ model = joblib.load(MODEL_PATH)
 HIGH_RISK_THRESHOLD = 60
 MEDIUM_RISK_THRESHOLD = 40
 ABSENCE_LIMIT = 12
+DECLINE_LIMIT = 1
  
  
 def get_fail_probability(record):
@@ -174,6 +175,8 @@ def dashboard(request):
     stable = 0
     absence_alerts = 0
     students_list = []
+    courses = {}
+    declines = []
  
     for record in visible_records(request.user):
         fail_percent = get_fail_probability(record)
@@ -198,7 +201,39 @@ def dashboard(request):
             "badge": badge,
         })
  
+        # مقارنة المقررات: نجمع ارقام كل مقرر لوحده
+        title = record.course.title
+        if title not in courses:
+            courses[title] = {"course": title, "total": 0, "at_risk": 0, "absence": 0}
+        courses[title]["total"] += 1
+        if fail_percent >= MEDIUM_RISK_THRESHOLD:
+            courses[title]["at_risk"] += 1
+        if is_absence_alert(record):
+            courses[title]["absence"] += 1
+ 
+        # تراجع تقييم الفترة الثانية عن الاولى بعلامة او اكثر
+        drop = record.g1() - record.g2()
+        if drop >= DECLINE_LIMIT:
+            declines.append({
+                "student": record.student.name,
+                "course": title,
+                "g1": record.g1(),
+                "g2": record.g2(),
+                "drop": drop,
+                "absences": record.absences,
+                "risk_level": risk_level,
+                "badge": badge,
+            })
+ 
     total = len(students_list)
+ 
+    # نسبة المعرضين للخطر في كل مقرر، والمقرر الاسوأ اولا
+    course_stats = list(courses.values())
+    for c in course_stats:
+        c["percent"] = round(c["at_risk"] / c["total"] * 100)
+    course_stats.sort(key=lambda c: c["percent"], reverse=True)
+ 
+    declines.sort(key=lambda item: item["drop"], reverse=True)
  
     # نعرض فقط الطلاب اللي بخطر
     at_risk = []
@@ -246,9 +281,12 @@ def dashboard(request):
         "top_risky": at_risk,
         "feature_importance": feature_importance,
         "model_metrics": model_metrics,
+        "course_stats": course_stats,
+        "declines": declines,
     })
-
-
+ 
+ 
+# المدير يبدأ من لوحة الادارة والمعلم من صفحة الادخال
 @login_required
 def after_login(request):
     if request.user.is_superuser:

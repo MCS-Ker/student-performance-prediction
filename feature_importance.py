@@ -1,6 +1,5 @@
 # feature_importance.py
 # الغاية: تحليل أثر كل ميزة في قرار النموذج
-# يُشغَّل بعد train.py
  
 import pandas as pd
 import joblib
@@ -11,7 +10,7 @@ features = ["absences", "studytime", "G1", "G2"]
 model = joblib.load("model.pkl")
  
 # coef_ تحتوي معامل كل ميزة
-# وهي مصفوفة من صفّ واحد لأن التصنيف ثنائي، لذلك نأخذ [0]
+# مصفوفة من صفّ واحد لأن التصنيف ثنائي، لذلك نأخذ [0]
 coefficients = model.coef_[0]
  
 print("=== 1. المعاملات الخام ===")
@@ -39,7 +38,7 @@ print("نضرب كل معامل بالانحراف المعياري لميزته
 print("فنحصل على أثر تغيّر نموذجي في كل ميزة، وتصبح المقارنة عادلة")
 print("")
  
-# القيمة المطلقة لأننا نقيس قوة الأثر لا اتجاهه
+# القيمة المطلقة ، قوة الأثر لا اتجاهه
 weights = []
 for name, coef in zip(features, coefficients):
     weights.append(abs(coef) * df[name].std())

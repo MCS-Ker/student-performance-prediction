@@ -1,7 +1,3 @@
-# train.py
-# الغاية: تدريب النماذج ومقارنتها واختيار الأنسب وحفظه
-# يُشغَّل بعد clean.py
- 
 import pandas as pd
 import joblib
 from sklearn.model_selection import train_test_split
@@ -39,8 +35,7 @@ def evaluate(name, model):
     print("Precision : " + str(round(precision_score(y_test, predictions), 3)))
     print("Recall    : " + str(round(recall_score(y_test, predictions), 3)))
     print("F1-score  : " + str(round(f1_score(y_test, predictions), 3)))
-    # هذا المقياس هو الأهمّ في مشروعنا:
-    # نسبة المتعثّرين الذين نجح النموذج في اكتشافهم
+    # نسبة المتعثرين الذين نجح النموذج في اكتشافهم
     print("Recall للمتعثّرين : " + str(round(recall_score(y_test, predictions, pos_label=0), 3)))
     return model
  
@@ -53,7 +48,7 @@ evaluate("Baseline", DummyClassifier(strategy="most_frequent"))
 print("")
 print("========== النماذج الثلاثة ==========")
  
-# class_weight="balanced" يعطي وزناً أكبر للصنف الأقل عدداً (الراسبين)
+# class_weight="balanced"  وزن أكبر للصنف الأقل عدد (الراسبين)
 logistic = evaluate("Logistic Regression",
                     LogisticRegression(class_weight="balanced", max_iter=1000))
  
@@ -61,8 +56,6 @@ forest = evaluate("Random Forest",
                   RandomForestClassifier(random_state=42, class_weight="balanced"))
  
 # StandardScaler ضروري هنا وحده لأن KNN يعتمد على المسافات
-# فلولاه لطغى عمود الغياب (0-75) على عمود وقت الدراسة (1-4)
-# ولا يدعم KNN معامل class_weight لأنه لا يبني نموذجاً بل يقارن بالجيران
 knn = evaluate("K-Nearest Neighbors",
                make_pipeline(StandardScaler(), KNeighborsClassifier()))
  
