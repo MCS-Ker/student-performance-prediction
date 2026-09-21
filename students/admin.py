@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Student, Course, StudentRecord, Prediction
+from .models import Student, Course, StudentRecord
 
 
 @admin.register(Student)
@@ -10,16 +10,10 @@ class StudentAdmin(admin.ModelAdmin):
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ("code", "title")
+    list_display = ("code", "title", "teacher")
 
 
 @admin.register(StudentRecord)
 class StudentRecordAdmin(admin.ModelAdmin):
     list_display = ("student", "course", "absences", "studytime",
                     "assignment1", "quiz1", "assignment2", "quiz2")
-
-
-@admin.register(Prediction)
-class PredictionAdmin(admin.ModelAdmin):
-    list_display = ("student", "course", "fail_probability",
-                    "predicted_result", "created_at")

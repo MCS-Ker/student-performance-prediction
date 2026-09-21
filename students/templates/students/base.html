@@ -89,16 +89,26 @@
                     <a class="nav-link" href="{% url 'dashboard' %}">لوحة التحليلات</a>
                     <a class="nav-link" href="{% url 'predictions' %}">نتائج التنبؤ</a>
                     <a class="nav-link" href="{% url 'add_record' %}">إدخال بيانات</a>
+                    {% if user.is_superuser %}
+                    <a class="nav-link" href="{% url 'admin:index' %}">لوحة الإدارة</a>
+                    {% endif %}
     
-                    <span class="nav-link text-white-50">{{ user.username }}</span>
-    
-                    <form method="POST" action="{% url 'logout' %}" class="d-inline m-0">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-sm btn-outline-light">خروج</button>
-                    </form>
+                    <div class="dropdown">
+                        <a class="nav-link dropdown-toggle text-white-50" href="#" data-bs-toggle="dropdown">{{ user.username }}</a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'password_change' %}">تغيير كلمة السر</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="POST" action="{% url 'logout' %}" class="m-0">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item text-danger">تسجيل الخروج</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                 {% else %}
                     <a class="nav-link" href="{% url 'login' %}">دخول</a>
-                    
+
                 {% endif %}
             </div>
         </div>

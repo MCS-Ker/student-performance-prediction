@@ -1,10 +1,15 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Student(models.Model):
     """جدول الطلاب"""
-    name = models.CharField(max_length=200)
-    student_id = models.CharField(max_length=50, unique=True)
+    name = models.CharField("اسم الطالب", max_length=200)
+    student_id = models.CharField("الرقم التعريفي", max_length=50, unique=True)
+
+    class Meta:
+        verbose_name = "طالب"
+        verbose_name_plural = "الطلاب"
 
     def __str__(self):
         return self.name
@@ -12,8 +17,21 @@ class Student(models.Model):
 
 class Course(models.Model):
     """جدول المقررات"""
-    title = models.CharField(max_length=200)
-    code = models.CharField(max_length=50, unique=True)
+    title = models.CharField("اسم المقرر", max_length=200)
+    code = models.CharField("رمز المقرر", max_length=50, unique=True)
+    
+    # المعلم المسؤول عن المقرر.. و صلاحية الوصول الى سجلاته
+    teacher = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        verbose_name="المعلم المسؤول",
+    )
+
+    class Meta:
+        verbose_name = "مقرر"
+        verbose_name_plural = "المقررات"
 
     def __str__(self):
         return self.title
@@ -21,8 +39,8 @@ class Course(models.Model):
 
 class StudentRecord(models.Model):
     """سجل الطالب: درجات التقييم المستمر والحضور"""
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name="الطالب")
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name="المقرر")
 
     absences = models.IntegerField("عدد الغيابات")
     studytime = models.IntegerField("وقت الدراسة الأسبوعي (1-4)")
@@ -51,16 +69,3 @@ class StudentRecord(models.Model):
 
     def __str__(self):
         return f"{self.student.name} - {self.course.title}"
-
-
-class Prediction(models.Model):
-    """جدول التنبؤات"""
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    fail_probability = models.FloatField("احتمال الرسوب")
-    predicted_result = models.CharField(max_length=20)
-    actual_result = models.CharField(max_length=20, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.student.name} - {self.predicted_result}"
