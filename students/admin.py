@@ -20,3 +20,6 @@ class StudentRecordAdmin(admin.ModelAdmin):
 
 
 admin.site.site_url = "/dashboard/"
+admin.site.site_url = "/dashboard/"
+admin.site.site_header = "لوحة الإدارة"
+admin.site.site_title = "لوحة الإدارة"
