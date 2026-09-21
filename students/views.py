@@ -266,7 +266,6 @@ def dashboard(request):
         "name": "الانحدار اللوجستي",
         "accuracy": 90.2,
         "risk_recall": 93.6,
-        "baseline": 73.6,
     }
  
     return render(request, "students/dashboard.html", {

@@ -93,7 +93,7 @@
     <div class="col-lg-6">
         <div class="card h-100">
             <div class="card-body">
-                <h5 class="card-title mb-4">أهمية العوامل في قرار النموذج</h5>
+                <h5 class="card-title mb-4">أهمية العوامل في قرار نموذج التنبؤ</h5>
 
                 {% for factor in feature_importance %}
                 <div class="mb-3">
@@ -152,10 +152,10 @@
     <div class="col-lg-5">
         <div class="card h-100">
             <div class="card-body">
-                <h5 class="card-title mb-3">أداء النموذج</h5>
+                <h5 class="card-title mb-3">أداء نموذج التنبؤ</h5>
 
                 <p class="text-muted small">
-                    النموذج المعتمد: <span class="fw-bold text-dark">{{ model_metrics.name }}</span>
+                    نموذج التنبؤ المعتمد: <span class="fw-bold text-dark">{{ model_metrics.name }}</span>
                 </p>
 
                 <div class="d-flex justify-content-between border-bottom py-2">
@@ -168,13 +168,10 @@
                     <span class="fw-bold text-success">{{ model_metrics.risk_recall }}%</span>
                 </div>
 
-                <div class="d-flex justify-content-between py-2">
-                    <span class="small">خط الأساس للمقارنة</span>
-                    <span class="fw-bold text-muted">{{ model_metrics.baseline }}%</span>
-                </div>
 
                 <p class="text-muted small mb-0 mt-3">
-                    من كل 100 طالب متعثر، يكتشف النظام حوالي 94.
+                    الدقة: من كل 100 طالب، يصيب النظام في حكمه (ناجح أو راسب) على حوالي 90.<br>
+                    الاكتشاف: من كل 100 طالب متعثر، يكتشف النظام حوالي 94.
                 </p>
             </div>
         </div>
