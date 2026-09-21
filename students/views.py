@@ -282,6 +282,7 @@ def dashboard(request):
         "feature_importance": feature_importance,
         "model_metrics": model_metrics,
         "course_stats": course_stats,
+        "show_comparison": len(course_stats) > 1,
         "declines": declines,
     })
  
